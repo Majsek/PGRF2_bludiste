@@ -16,10 +16,10 @@ public:
 	// Constructor that build the Shader Program from 2 different shaders
 	Shader(const char* vertexFile, const char* fragmentFile);
 
+	~Shader() { glDeleteProgram(ID); }
+
 	// Activates the Shader Program
 	void Activate();
-	// Deletes the Shader Program
-	void Delete();
 
 	// Nastaví uniformní promìnnou pro matici 4x4
 	void SetMat4(const std::string& name, const GLfloat* value);

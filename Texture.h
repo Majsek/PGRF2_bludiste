@@ -11,15 +11,15 @@ class Texture
 public:
 	GLuint ID;
 	GLenum type;
-	Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
+	Texture(const char* image, GLenum texType, GLenum slot, GLenum pixelType);
+
+	~Texture() { glDeleteTextures(1, &ID); }
 
 	// Assigns a texture unit to a texture
 	void texUnit(Shader& shader, const char* uniform, GLuint unit);
-	// Binds a texture
-	void Bind();
+
+	void Bind() const { glBindTexture(type, ID); }
 	// Unbinds a texture
 	void Unbind();
-	// Deletes a texture
-	void Delete();
 };
 #endif

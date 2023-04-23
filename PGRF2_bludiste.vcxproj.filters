@@ -19,8 +19,8 @@
     <Filter Include="Resource Files\Textures">
       <UniqueIdentifier>{e0db81ba-20a6-43ae-977c-67cc890b75ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Objects">
-      <UniqueIdentifier>{fc87cf6a-a10c-4d15-8c09-56bd2d09f89a}</UniqueIdentifier>
+    <Filter Include="Header Files\Objects">
+      <UniqueIdentifier>{4e4f23ee-1b2a-46e3-8d8a-5d1589ad9ba9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,15 +33,6 @@
     <ClCompile Include="shaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VBO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VAO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EBO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,11 +42,8 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Object_interface.cpp">
-      <Filter>Source Files\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Wall.cpp">
-      <Filter>Source Files\Objects</Filter>
+    <ClCompile Include="Wall.h">
+      <Filter>Header Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,8 +75,11 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
+    <ClInclude Include="Geometry.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Paper.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

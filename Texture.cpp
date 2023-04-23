@@ -1,6 +1,6 @@
 #include"Texture.h"
 
-Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
+Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum pixelType)
 {
 	// Assigns the type of the texture ot the texture object
 	type = texType;
@@ -10,7 +10,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	// Flips the image so it appears right side up
 	stbi_set_flip_vertically_on_load(true);
 	// Reads the image from a file and stores it in bytes
-	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
+	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 4);
 
 	// Generates an OpenGL texture object
 	glGenTextures(1, &ID);
@@ -30,8 +30,8 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	// float flatColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	// glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, flatColor);
 
-	// Assigns the image to the OpenGL Texture object
-	glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, format, pixelType, bytes);
+	// Assigns the image to the dOpenGL Texture object
+	glTexImage2D(texType, 0, GL_RGB, widthImg, heightImg, 0, GL_RGBA, pixelType, bytes);
 	// Generates MipMaps
 	glGenerateMipmap(texType);
 
@@ -39,30 +39,11 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	stbi_image_free(bytes);
 
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
-	glBindTexture(texType, 0);
+	//glBindTexture(texType, 0);
 }
 
-void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
-{
-	// Gets the location of the uniform
-	GLuint texUni = glGetUniformLocation(shader.ID, uniform);
-	// Shader needs to be activated before changing the value of a uniform
-	shader.Activate();
-	// Sets the value of the uniform
-	glUniform1i(texUni, unit);
-}
-
-void Texture::Bind()
-{
-	glBindTexture(type, ID);
-}
 
 void Texture::Unbind()
 {
 	glBindTexture(type, 0);
-}
-
-void Texture::Delete()
-{
-	glDeleteTextures(1, &ID);
 }

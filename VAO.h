@@ -1,24 +1,41 @@
-#ifndef VAO_CLASS_H
-#define VAO_CLASS_H
+#pragma once
+#include "VBO.h"
 
-#include<glad/glad.h>
-#include"VBO.h"
+#include <glad/glad.h>
+
+#include <utility>
 
 class VAO
 {
-public:
 	// ID reference for the Vertex Array Object
-	GLuint ID;
-	// Constructor that generates a VAO ID
-	VAO();
+	GLuint ID{};
+public:
+	VAO()
+	{
+		glGenVertexArrays(1, &ID);
+		Bind();
+	}
+
+	VAO(VAO&& other) noexcept
+	{
+		std::swap(ID, other.ID);
+	}
+
+	VAO(VAO const&) = delete;
+	VAO& operator=(VAO const&) = delete;
+	VAO& operator=(VAO&&) = delete;
+
+	~VAO() { if (ID) { glDeleteVertexArrays(1, &ID); } }
 
 	// Links a VBO Attribute such as a position or color to the VAO
-	void LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset);
-	// Binds the VAO
-	void Bind();
-	// Unbinds the VAO
-	void Unbind();
-	// Deletes the VAO
-	void Delete();
+	void LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizei stride, void* offset)
+	{
+		VBO.Bind();
+		glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
+		glEnableVertexAttribArray(layout);
+		VBO.Unbind();
+	}
+
+	void Bind() const { glBindVertexArray(ID); }
+	void Unbind() const { glBindVertexArray(0); }
 };
-#endif

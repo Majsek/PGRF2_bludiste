@@ -64,11 +64,6 @@ void Shader::Activate()
 	glUseProgram(ID);
 }
 
-// Deletes the Shader Program
-void Shader::Delete()
-{
-	glDeleteProgram(ID);
-}
 
 void Shader::SetMat4(const std::string& name, const GLfloat* value) {
 	// Najdeme uniformní promìnnou v shaderu

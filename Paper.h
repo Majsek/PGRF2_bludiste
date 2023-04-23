@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 #include <array>
+#include <string>
 
 struct PaperGeometry
 {

@@ -162,27 +162,8 @@ auto Intersects(float square_p, float p, float offset) -> bool
 void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 	glm::vec2 newPosition = glm::vec2(Position_.x, Position_.z) + glm::vec2(nextPosition.x, nextPosition.z);
 
-	/*std::vector<Square> squares;*/
-	////squares.reserve(4);
-
-	// Adding some squares
-	/*for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 20; j++) {
-			if (!map_[i][j])
-			{
-				continue;
-			}
-			std::cout << "yup";
-			squares.emplace_back(i*0.5f, j*0.5f);*/
-	/*squares.emplace_back(1.5f, 0.5f);
-	squares.emplace_back(0.5f, 2.5f);
-	squares.emplace_back(1.5f, 2.5f);*/
-
-	//	}
-	//}
-
 	int i = -1;
-	for (auto const& square : squares_) {
+	for (Square const& square : squares_) {
 		++i;
 		if (square.Intersects(newPosition.x, newPosition.y))
 		{
@@ -192,7 +173,7 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 				if (Intersects(square.x, Position_.x, square.width))
 				{
 					// Collision detected, don't move
-					std::cout << "Collision detected on ";
+					/*std::cout << "Collision detected on ";
 					std::cout << i + 1;
 					std::cout << "\n";
 					std::cout << "Position: ";
@@ -200,14 +181,14 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 					std::cout << Position_.x;
 					std::cout << "\n y: ";
 					std::cout << Position_.z;
-					std::cout << "\n";
+					std::cout << "\n";*/
 					new_pos.y = Position_.z;
 				}
 
 				if (Intersects(square.y, Position_.z, square.height))
 				{
 					// Collision detected, don't move
-					std::cout << "Collision detected on ";
+					/*std::cout << "Collision detected on ";
 					std::cout << i + 1;
 					std::cout << "\n";
 					std::cout << "Position: ";
@@ -215,7 +196,7 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 					std::cout << Position_.x;
 					std::cout << "\n y: ";
 					std::cout << Position_.z;
-					std::cout << "\n";
+					std::cout << "\n";*/
 					new_pos.x = Position_.x;
 				}
 

@@ -1,47 +1,23 @@
 #include"Camera.h"
-#include <vector>
-
-struct Square {
-	float x;
-	float y;
-	float width{ 0.65f };
-	float height{ 0.65f };
-
-	Square(float x_, float y_) {
-		x = x_;
-		y = y_;
-	}
-
-	bool Intersects(float xx, float yy) const
-	{
-		return (x < xx + width
-			&& x + width > xx
-			&& y < yy + height
-			&& y + height > yy);
-	}
-};
-
-std::vector<Square> squares_;
 
 
-
-Camera::Camera(int width, int height, glm::vec3 position, bool map[20][20])
+Camera::Camera(int width, int height, glm::vec3 position, int map[20][20])
 	: Position_{ position },
 	width_{ width },
 	height_{ height },
 	map_{ }
 {
-	for (int i = 0; i < 20; ++i) {
-		for (int j = 0; j < 20; ++j) {
-			map_[i][j] = map[i][j];
-			std::cout << "yup";
-			if (!map_[i][j])
-			{
-				continue;
-			}
-			squares_.emplace_back(i + 0.5f, j + 0.5f);
-		}
-	}
+//	for (int i = 0; i < 20; ++i) {
+//		for (int j = 0; j < 20; ++j) {
+//			map_[i][j] = map[i][j];
+//			//std::cout << "yup";
+//			if (!map_[i][j])
+//			{
+//				continue;
+//			}
+//			squares_.emplace_back(i + 0.5f, j + 0.5f, 0.65f);
+//		}
+//	}
 }
 
 
@@ -163,7 +139,7 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 	glm::vec2 newPosition = glm::vec2(Position_.x, Position_.z) + glm::vec2(nextPosition.x, nextPosition.z);
 
 	int i = -1;
-	for (Square const& square : squares_) {
+	for (Square& square : squares_) {
 		++i;
 		if (square.Intersects(newPosition.x, newPosition.y))
 		{
@@ -182,6 +158,17 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 					std::cout << "\n y: ";
 					std::cout << Position_.z;
 					std::cout << "\n";*/
+					if (square.type == 2)
+					{
+						std::cout << "Zápoèet opraven\n";
+						std::cout << square.type;
+						square.type = 3;
+						return new_pos;
+					}
+					else if (square.type == 3)
+					{
+						return new_pos;
+					}
 					new_pos.y = Position_.z;
 				}
 
@@ -197,7 +184,19 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 					std::cout << "\n y: ";
 					std::cout << Position_.z;
 					std::cout << "\n";*/
+					if (square.type == 2)
+					{
+						std::cout << "Zápoèet opraven\n";
+						std::cout << square.type;
+						square.type = 3;
+						return new_pos;
+					}
+					else if (square.type == 3)
+					{
+						return new_pos;
+					}
 					new_pos.x = Position_.x;
+					
 				}
 
 				return new_pos;

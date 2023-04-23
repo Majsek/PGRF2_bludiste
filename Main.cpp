@@ -22,41 +22,6 @@ namespace fs = std::filesystem;
 const unsigned int width = 800;
 const unsigned int height = 800;
 
-
-
-//{ //     COORDINATES     /        COLORS      /   TexCoord  //
-//	//bottom
-//	0.0f, 0.0f,  1.0f,     0.83f, 0.70f, 0.44f,	1.0f, 0.0f,
-//	0.0f, 0.0f, 0.0f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-//
-//	 1.0f, 0.0f, 0.0f,     0.83f, 0.70f, 0.44f,	1.0f, 0.0f,
-//	 1.0f, 0.0f,  1.0f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-//
-//	//top
-//	0.0f, 1.0f,  1.0f,     0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
-//	0.0f, 1.0f, 0.0f,     0.83f, 0.70f, 0.44f,	0.0f, 1.0f,
-//
-//	 1.0f, 1.0f, 0.0f,     0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
-//	 1.0f, 1.0f,  1.0f,     0.83f, 0.70f, 0.44f,	0.0f, 1.0f,
-//};
-//{ //     COORDINATES     /        COLORS      /   TexCoord  //
-	//bottom
-	//-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	1.0f, 0.0f,
-	//-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-
-	// 0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	1.0f, 0.0f,
-	// 0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-
-	//top
-//	-0.5f, 1.0f,  0.5f,     0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
-//	-0.5f, 1.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 1.0f,
-
-	// 0.5f, 1.0f, -0.5f,     0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
-	// 0.5f, 1.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 1.0f,
-//};
-
-// Indices for vertices order
-
 struct Object
 {
 	glm::mat4 trans_matrix;
@@ -123,29 +88,20 @@ int main()
 	WallGeometry wall_geometry;
 	PaperGeometry paper_geometry;
 
-	/*
-	* I'm doing this relative path thing in order to centralize all the resources into one folder and not
-	* duplicate them between tutorial folders. You can just copy paste the resources from the 'Resources'
-	* folder and then give a relative path from this folder to whatever resource you want to get to.
-	* Also note that this requires C++17, so go to Project Properties, C/C++, Language, and select C++17
-	*/
-	//std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
-	//std::string texPath = "/Resources/YoutubeOpenGL 7 - Going 3D/";
-
 	Texture brick_texture("wise_oak_tree.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
 	Texture paper_texture("paperF1.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
-	// Gets ID of uniform called "scale"
-	//GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
-
 	// Initializes matrices so they are not the null matrix
 	glm::mat4 transMat{ 1.0f };
 
-	// Creates a bool map
-	bool  map_[20][20] = {
+	// Creates int map
+	// 0 nothing
+	// 1 wall
+	// 2 paper
+	int  map_[20][20] = {
 	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -154,16 +110,16 @@ int main()
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	};
@@ -180,23 +136,31 @@ int main()
 
 	for (int i = 0; i < 20; i++) {
 		for (int j = 0; j < 20; j++) {
-			if (!map_[i][j])
+			if (map_[i][j] == 0)
 			{
 				continue;
 			}
+			else if(map_[i][j] == 1)
+			{
 			objects.emplace_back(
 				glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)),
 				brick_texture,
 				wall_geometry.obj
 			);
+			camera.squares_.emplace_back(i + 0.5f, j + 0.5f, 0.65f, map_[i][j]);
+			}
+			else
+			{
+			objects.emplace_back(
+				glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)),
+				paper_texture,
+				paper_geometry.obj
+			);
+			camera.squares_.emplace_back(i + 0.5f, j + 0.5f, 0.4f, map_[i][j]);
+			}
 		}
 	}
 
-	objects.emplace_back(
-		glm::translate(glm::mat4(1.0f), glm::vec3(3, 0.0f, 3)),
-		paper_texture,
-		paper_geometry.obj
-	);
 
 
 	//for (const auto& object : objects) {

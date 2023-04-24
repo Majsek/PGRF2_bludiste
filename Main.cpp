@@ -22,12 +22,16 @@ namespace fs = std::filesystem;
 const unsigned int width = 800;
 const unsigned int height = 800;
 
+
+
+
 struct Object
 {
 	glm::mat4 trans_matrix;
 	Texture const& texture;
 	Geometry const& geometry;
 };
+
 
 void draw_object(Object const& obj, int model_location)
 {
@@ -36,6 +40,87 @@ void draw_object(Object const& obj, int model_location)
 	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(obj.trans_matrix));
 	glDrawElements(GL_TRIANGLES, obj.geometry.index_num, GL_UNSIGNED_INT, 0);
 };
+
+
+struct World
+{
+	// Creates int map
+	// 0 nothing
+	// 1 wall
+	// 2 paper
+	int  map_[20][20] = {
+	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+	};
+
+	WallGeometry wallgeometry;
+	PaperGeometry papergeometry;
+	Texture walltext{ "wise_oak_tree.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE };
+	Texture papertext{ "paperF1.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE };
+
+	std::vector<Object> objects;
+
+	// Create camera object
+	Camera camera{ width, height, glm::vec3(2.0f, 3.5f, 1.5f), map_ };
+
+	World() { reset(); }
+
+	void reset()
+	{
+		//objects.clear();
+		//camera.squares_.clear();
+		std::cout << "RESET";
+		
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 20; j++) {
+				if (map_[i][j] == 0)
+				{
+					//std::cout << "nothing";
+					continue;
+				}
+				else if (map_[i][j] == 1)
+				{
+					//std::cout << "wall";
+					objects.emplace_back(
+						glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)),
+						walltext,
+						wallgeometry.obj
+					);
+					camera.squares_.emplace_back(i + 0.5f, j + 0.5f, 0.65f, map_[i][j]);
+				}
+				else if (map_[i][j] == 2)
+				{
+					//std::cout << "paper";
+					objects.emplace_back(
+						glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)),
+						papertext,
+						papergeometry.obj
+					);
+					camera.squares_.emplace_back(i + 0.5f, j + 0.5f, 0.4f, map_[i][j]);
+				}
+			}
+		}
+	}
+};
+
 
 struct glfw
 {
@@ -85,81 +170,21 @@ int main()
 	// Generates Shader object using shaders default.vert and default.frag
 	Shader shaderProgram("default.vert", "default.frag");
 
-	WallGeometry wall_geometry;
-	PaperGeometry paper_geometry;
-
-	Texture brick_texture("wise_oak_tree.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
-	Texture paper_texture("paperF1.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
 	// Initializes matrices so they are not the null matrix
-	glm::mat4 transMat{ 1.0f };
+	//glm::mat4 transMat{ 1.0f };
 
-	// Creates int map
-	// 0 nothing
-	// 1 wall
-	// 2 paper
-	int  map_[20][20] = {
-	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	};
 
-	// Creates camera object
-	Camera camera(width, height, glm::vec3(2.0f, 3.5f, 1.5f), map_);
+
 
 	int const modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 
 	double prevTime = glfwGetTime();
 
-
-	std::vector<Object> objects;
-
-	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 20; j++) {
-			if (map_[i][j] == 0)
-			{
-				continue;
-			}
-			else if(map_[i][j] == 1)
-			{
-			objects.emplace_back(
-				glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)),
-				brick_texture,
-				wall_geometry.obj
-			);
-			camera.squares_.emplace_back(i + 0.5f, j + 0.5f, 0.65f, map_[i][j]);
-			}
-			else
-			{
-			objects.emplace_back(
-				glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)),
-				paper_texture,
-				paper_geometry.obj
-			);
-			camera.squares_.emplace_back(i + 0.5f, j + 0.5f, 0.4f, map_[i][j]);
-			}
-		}
-	}
+	World my_world;
 
 
 
@@ -192,12 +217,13 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		// Handles camera inputs
-		camera.Inputs(window, static_cast<float>(delta_t));
+		my_world.camera.Inputs(window, static_cast<float>(delta_t));
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.Matrix(70.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+		my_world.camera.Matrix(70.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		for (auto const& obj : objects)
+		for (auto const& obj : my_world.objects)
 		{
+			//std::cout << "object draw";
 			draw_object(obj, modelLoc);
 		}
 
@@ -211,3 +237,4 @@ int main()
 	glfwDestroyWindow(window);
 	return 0;
 }
+

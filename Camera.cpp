@@ -149,7 +149,7 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 				if (Intersects(square.x, Position_.x, square.width))
 				{
 					// Collision detected, don't move
-					/*std::cout << "Collision detected on ";
+					std::cout << "Collision detected on ";
 					std::cout << i + 1;
 					std::cout << "\n";
 					std::cout << "Position: ";
@@ -157,7 +157,7 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 					std::cout << Position_.x;
 					std::cout << "\n y: ";
 					std::cout << Position_.z;
-					std::cout << "\n";*/
+					std::cout << "\n";
 					if (square.type == 2)
 					{
 						std::cout << "Zápoèet opraven\n";
@@ -175,7 +175,7 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 				if (Intersects(square.y, Position_.z, square.height))
 				{
 					// Collision detected, don't move
-					/*std::cout << "Collision detected on ";
+					std::cout << "Collision detected on ";
 					std::cout << i + 1;
 					std::cout << "\n";
 					std::cout << "Position: ";
@@ -183,7 +183,7 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 					std::cout << Position_.x;
 					std::cout << "\n y: ";
 					std::cout << Position_.z;
-					std::cout << "\n";*/
+					std::cout << "\n";
 					if (square.type == 2)
 					{
 						std::cout << "Zápoèet opraven\n";

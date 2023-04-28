@@ -9,13 +9,12 @@
 struct PaperGeometry
 {
     Geometry obj{ Geometry::create<20, 6>(
-    { //     COORDINATES     /        COLORS      /   TexCoord  //
+    { //     COORDINATES       /    TexCoord  //
             //bottom
-            0.42f, 0.0f, 0.0f, 0.0f, 0.0f, //0
-            0.0f, 0.0f, 0.0f, 1.0f, 0.0f,  //1
-            0.0f, 0.0f, 0.6f, 1.0f, 1.0f,  //2
-            0.42f, 0.0f, 0.6f, 0.0f, 1.0f, //3
-
+            0.41f, 0.0f, 0.2f,   0.0f, 0.0f, //0
+            0.2f, 0.0f, 0.2f,    1.0f, 0.0f,  //1
+            0.2f, 0.0f, 0.5f,    1.0f, 1.0f,  //2
+            0.41f, 0.0f, 0.5f,   0.0f, 1.0f, //3
     },
     {
         0, 1, 2,

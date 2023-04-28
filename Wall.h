@@ -9,20 +9,20 @@ struct WallGeometry
 {
     Geometry obj{
         Geometry::create<40, 24>(
-    { //     COORDINATES     /        COLORS      /   TexCoord  //
+    { //     COORDINATES     /   TexCoord  //
             //bottom
-            0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f,    1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,    0.0f, 0.0f,
 
-            1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,    1.0f, 0.0f,
+            1.0f, 0.0f, 1.0f,    0.0f, 0.0f,
 
             //top
-            0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 1.0f, 1.0f,    1.0f, 1.0f,
+            0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
 
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 0.0f,    1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,    0.0f, 1.0f,
     },
 
     {

@@ -25,6 +25,14 @@ struct Square {
 		type = type_;
 	}
 
+	Square(float x_, float y_, float width_, float height_, int type_) {
+		x = x_;
+		y = y_;
+		width = width_;
+		height = height_;
+		type = type_;
+	}
+
 	bool Intersects(float xx, float yy) const
 	{
 		return (x < xx + width

@@ -111,8 +111,8 @@ void Camera::Inputs(GLFWwindow* window, float const delta_t)
 
 void Camera::UpdatePaper(Square square) {
 	std::cout << "Zápoèet opraven\n";
-	square.type = 3;
-	world_.map_[static_cast<int>(square.x - 0.5f)][static_cast<int>(square.y - 0.5f)] = 3;
+	square.type += 1;
+	world_.map_[static_cast<int>(square.x - 0.5f)][static_cast<int>(square.y - 0.5f)] += 1;
 	world_.reset();
 }
 
@@ -169,5 +169,5 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 	}
 
 	// Move
-	Position_ = glm::vec3(newPosition.x, 0.5f, newPosition.y);
+	Position_ = glm::vec3(newPosition.x, 0.6f, newPosition.y);
 }

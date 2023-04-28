@@ -34,6 +34,9 @@ struct Square {
 	}
 };
 
+// forward declaration
+struct World;
+
 struct Camera
 {
 	// Stores the main vectors of the camera
@@ -45,31 +48,41 @@ struct Camera
 	bool firstClick = true;
 	std::vector<Square> squares_;
 
+	World& world_;
 
-	// Stores the width and height of the window
+	// Stores the WIDTH and HEIGHT of the window
 	int width_;
 	int height_;
-
-
-	bool map_[20][20];
 
 	// Adjust the speed of the camera and it's sensitivity when looking around
 	float speed{ 0.1f };
 	float sensitivity{ 50.0f };
 
 	// Camera constructor to set up initial values
-	Camera(int width, int height, glm::vec3 position, int map[20][20]);
-	//Camera(int width, int height, glm::vec3 position, bool map[20][20])
+	//Camera(int WIDTH, int HEIGHT, glm::vec3 position, int(*map_)[20]);
+	//Camera(int WIDTH, int HEIGHT, glm::vec3 position, bool map[20][20])
 	//	: Position_{ position },
-	//	width_{ width },
-	//	height_{ height },
+	//	width_{ WIDTH },
+	//	height_{ HEIGHT },
 	//	map_ { }
 	//{ 	}
+
+
+	Camera(int width, int height, glm::vec3 position, World& world)
+		: Position_{ position },
+		world_{ world },
+		width_{ width },
+		height_{ height }
+	{}
+
 
 	// Updates and exports the camera matrix to the Vertex Shader
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
 	// Handles camera inputs
 	void Inputs(GLFWwindow* window, float const delta_t);
+
+	//Updates paper on collision
+	void UpdatePaper(Square square);
 
 	// Tries moving to the next position, checks collisions with walls
 	void Try_move_on_pos(glm::vec3 nextPosition);

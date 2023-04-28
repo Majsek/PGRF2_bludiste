@@ -159,6 +159,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="shaderClass.cpp" />
+    <ClCompile Include="Source.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Wall.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="Geometry.h" />
+    <ClInclude Include="World.h" />
     <ClInclude Include="Paper.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="Texture.h" />

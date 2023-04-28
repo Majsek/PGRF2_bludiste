@@ -1,24 +1,6 @@
 #include"Camera.h"
 
-
-Camera::Camera(int width, int height, glm::vec3 position, int map[20][20])
-	: Position_{ position },
-	width_{ width },
-	height_{ height },
-	map_{ }
-{
-//	for (int i = 0; i < 20; ++i) {
-//		for (int j = 0; j < 20; ++j) {
-//			map_[i][j] = map[i][j];
-//			//std::cout << "yup";
-//			if (!map_[i][j])
-//			{
-//				continue;
-//			}
-//			squares_.emplace_back(i + 0.5f, j + 0.5f, 0.65f);
-//		}
-//	}
-}
+#include "World.h"
 
 
 void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform)
@@ -127,6 +109,12 @@ void Camera::Inputs(GLFWwindow* window, float const delta_t)
 }
 
 
+void Camera::UpdatePaper(Square square) {
+	std::cout << "Zápoèet opraven\n";
+	square.type = 3;
+	world_.map_[static_cast<int>(square.x - 0.5f)][static_cast<int>(square.y - 0.5f)] = 3;
+	world_.reset();
+}
 
 
 auto Intersects(float square_p, float p, float offset) -> bool
@@ -134,7 +122,7 @@ auto Intersects(float square_p, float p, float offset) -> bool
 	return square_p < p + offset && square_p + offset > p;
 }
 
-
+//Collisions
 void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 	glm::vec2 newPosition = glm::vec2(Position_.x, Position_.z) + glm::vec2(nextPosition.x, nextPosition.z);
 
@@ -148,21 +136,9 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 				auto new_pos{ newPosition };
 				if (Intersects(square.x, Position_.x, square.width))
 				{
-					// Collision detected, don't move
-					std::cout << "Collision detected on ";
-					std::cout << i + 1;
-					std::cout << "\n";
-					std::cout << "Position: ";
-					std::cout << "\n x: ";
-					std::cout << Position_.x;
-					std::cout << "\n y: ";
-					std::cout << Position_.z;
-					std::cout << "\n";
 					if (square.type == 2)
 					{
-						std::cout << "Zápoèet opraven\n";
-						std::cout << square.type;
-						square.type = 3;
+						UpdatePaper(square);
 						return new_pos;
 					}
 					else if (square.type == 3)
@@ -174,21 +150,9 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 
 				if (Intersects(square.y, Position_.z, square.height))
 				{
-					// Collision detected, don't move
-					std::cout << "Collision detected on ";
-					std::cout << i + 1;
-					std::cout << "\n";
-					std::cout << "Position: ";
-					std::cout << "\n x: ";
-					std::cout << Position_.x;
-					std::cout << "\n y: ";
-					std::cout << Position_.z;
-					std::cout << "\n";
 					if (square.type == 2)
 					{
-						std::cout << "Zápoèet opraven\n";
-						std::cout << square.type;
-						square.type = 3;
+						UpdatePaper(square);
 						return new_pos;
 					}
 					else if (square.type == 3)
@@ -204,6 +168,6 @@ void Camera::Try_move_on_pos(glm::vec3 nextPosition) {
 		}
 	}
 
-	// You can move
+	// Move
 	Position_ = glm::vec3(newPosition.x, 0.5f, newPosition.y);
 }

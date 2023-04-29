@@ -26,7 +26,7 @@ void draw_object(Object const& obj, int model_location)
 {
 	obj.geometry.vao.Bind();
 	obj.texture.Bind();
-	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(obj.trans_matrix));
+	glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(obj.model_matrix));
 	glDrawElements(GL_TRIANGLES, obj.geometry.index_num, GL_UNSIGNED_INT, 0);
 };
 
@@ -87,8 +87,6 @@ int main()
 	//glm::mat4 transMat{ 1.0f };
 
 
-
-
 	int const modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 
 	GLint randomLoc = glGetUniformLocation(shaderProgram.ID, "random");
@@ -105,7 +103,7 @@ int main()
 	//	std::cout << typeid(object.geometry).name() << " \n";
 	//	for (int i = 0; i < 4; i++) {
 	//		for (int j = 0; j < 4; j++) {
-	//			std::cout << object.trans_matrix[i][j] << " ";
+	//			std::cout << object.model_matrix[i][j] << " ";
 	//		}
 	//		std::cout << std::endl;
 	//	}
@@ -125,10 +123,13 @@ int main()
 
 
 	// Nastavení semínka pro generátor náhodných èísel
-	srand(time(0));
+//	srand(time(0));
 
 	// Initial flame value
 	float flame = 0.7f;
+
+	// Enemy speed
+	const float enemy_speed = 0.5f;
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
@@ -145,26 +146,77 @@ int main()
 		// Updates and exports the camera matrix to the Vertex Shader
 		my_world.camera.Matrix(70.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		std::cout << "\n Camera pos: \n" << my_world.camera.Position_.x << std::endl;
-		std::cout << my_world.camera.Position_.z << std::endl;
 
 		// Random flame change
-		flame += ((rand() % 100 - 50) / 10.0f) * delta_t;
+		static double time_acc = 0.0;
+		time_acc += delta_t;
+		constexpr auto const FLAME_RATE{ 60.0 };
+		constexpr auto const FLAME_PERIOD{ 1.0 / FLAME_RATE };
+		if (time_acc > FLAME_PERIOD)
+		{
+			time_acc -= FLAME_PERIOD;
+			flame += (rand() % 100 - 50) * 0.001f;
+		}
 
 		// Flame range limiter 0.6f-1.0f
-		flame = std::max(flame, 0.6f);
+		flame = std::max(flame, 0.7f);
 		flame = std::min(flame, 1.0f);
 
 		glUniform1f(randomLoc, flame);
 
 		//std::cout << "Flame value: " << flame << std::endl;
 
+		//Enemy translate
+		//my_world.enemy.model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.f, 0.0f, 3.f));
+	/*	glm::mat4 translate_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.f, 0.0f, 3.f));
+		my_world.enemy.model_matrix += translate_matrix * glm::translate(glm::mat4(1.0f), + my_world.camera.Position_);*/
 
+
+
+		// Vypoèítáme smìr, kterým se nepøítel bude pohybovat
+		//glm::vec3 direction = glm::normalize(my_world.camera.Position_ - my_world.enemy.model_matrix[3]);
+		glm::mat4 enemy_mat4 = my_world.enemy.model_matrix;
+		glm::vec3 enemy_vec3 = glm::vec3(enemy_mat4[3].x, enemy_mat4[3].y, enemy_mat4[3].z);
+
+		glm::vec3 direction = glm::normalize(enemy_vec3 - my_world.camera.Position_);
+		direction.y = 0.0f;
+
+		// Vypoèítáme vzdálenost, kterou se nepøítel bude pohybovat
+		float distance = static_cast<float>(enemy_speed * delta_t);
+
+		auto const cam_pos = glm::vec2{ my_world.camera.Position_.x,  my_world.camera.Position_.z };
+		auto const pos = glm::vec2{ enemy_vec3.x, enemy_vec3.z };
+
+		// Pokud by se nepøítel pohyboval více než vzdálenost mezi ním a kamerou, omezíme ho na tuto vzdálenost
+		auto const enemy_vec = cam_pos - pos;
+		auto const enemy_dist = (enemy_vec.x * enemy_vec.x + enemy_vec.y * enemy_vec.y);
+		if (enemy_dist < 6.0f && enemy_dist > 3.0f)
+		{
+			distance = 0.005f;// glm::length(cam_pos - pos);
+		}
+
+		// Vypoèítáme novou pozici nepøítele pomocí lineární interpolace
+		glm::vec3 new_position = enemy_vec3 - direction * distance;
+
+		// Nastavíme novou pozici nepøítele
+		my_world.enemy.model_matrix = glm::mat4{1.f};
+		my_world.enemy.model_matrix[3] = glm::vec4(new_position, 1.0f);
+
+
+		my_world.enemy.model_matrix *= glm::rotate(glm::orientedAngle(glm::normalize(cam_pos - pos), glm::vec2(1.0f, 0.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
+		
+		/*std::cout << "\n Enemy pos: \n" << my_world.enemy.model_matrix[3].a << std::endl;
+		std::cout << my_world.enemy.model_matrix[3].b << std::endl;*/
+
+
+
+		//Draw objects
 		for (auto const& obj : my_world.objects)
 		{
 			draw_object(obj, modelLoc);
 		}
-
+		draw_object(my_world.enemy, modelLoc);
+		
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events

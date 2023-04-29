@@ -5,10 +5,11 @@
 #include "Texture.h"
 #include "Paper.h"
 #include "Table.h"
+#include "Enemy.h"
 
 struct Object
 {
-	glm::mat4 trans_matrix;
+	glm::mat4 model_matrix;
 	Texture const& texture;
 	Geometry const& geometry;
 };
@@ -48,6 +49,7 @@ struct World
 	WallGeometry wallgeometry;
 	PaperGeometry papergeometry;
 	TableGeometry tablegeometry;
+	EnemyGeometry enemyegeometry;
 	Texture walltext{ "wise_oak_tree.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE };
 	Texture paperFtext{ "paperF.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE };
 	Texture paperAtext{ "paperA.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE };
@@ -56,13 +58,21 @@ struct World
 	std::vector<Object> objects;
 
 	// Create camera object
-	Camera camera{ 800, 800, glm::vec3(2.0f, 3.5f, 1.5f), *this };
+	Camera camera{ 800, 800, glm::vec3(2.0f, 0.6f, 1.5f), *this };
 
 	World() { reset(); }
 
 	float const tableWidth = 0.27f;
 	float const tableHeight = 0.4f;
 	float const tableOffset = -0.27f;
+
+	Object enemy{ 
+			glm::translate(glm::mat4(1.0f), glm::vec3(10.f, 0.0f, 10.f)),
+			walltext,
+			enemyegeometry.obj 
+	};
+
+
 
 	void reset()
 	{

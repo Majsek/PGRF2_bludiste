@@ -90,6 +90,9 @@
     <ClInclude Include="Table.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Users\Majsek\Pictures\wise_oak_tree.jpg">

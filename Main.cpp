@@ -18,6 +18,7 @@
 #include <iostream>
 #include <filesystem>
 #include "Paper.h"
+#include <random>
 namespace fs = std::filesystem;
 
 
@@ -90,6 +91,9 @@ int main()
 
 	int const modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 
+	GLint randomLoc = glGetUniformLocation(shaderProgram.ID, "random");
+	
+
 	double prevTime = glfwGetTime();
 
 	World my_world;
@@ -109,10 +113,22 @@ int main()
 	//}
 
 
+
 	shaderProgram.Activate();
 
 	// Specify the color of the background
 	glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+
+
+
+
+
+
+	// Nastavení semínka pro generátor náhodných èísel
+	srand(time(0));
+
+	// Initial flame value
+	float flame = 0.7f;
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
@@ -129,9 +145,23 @@ int main()
 		// Updates and exports the camera matrix to the Vertex Shader
 		my_world.camera.Matrix(70.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
+		std::cout << "\n Camera pos: \n" << my_world.camera.Position_.x << std::endl;
+		std::cout << my_world.camera.Position_.z << std::endl;
+
+		// Random flame change
+		flame += ((rand() % 100 - 50) / 10.0f) * delta_t;
+
+		// Flame range limiter 0.6f-1.0f
+		flame = std::max(flame, 0.6f);
+		flame = std::min(flame, 1.0f);
+
+		glUniform1f(randomLoc, flame);
+
+		//std::cout << "Flame value: " << flame << std::endl;
+
+
 		for (auto const& obj : my_world.objects)
 		{
-			//std::cout << "object draw";
 			draw_object(obj, modelLoc);
 		}
 

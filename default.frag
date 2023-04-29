@@ -9,11 +9,14 @@ in vec2 texCoord;
 // Gets the Texture Unit from the main function
 layout (binding = 0) uniform sampler2D tex0;
 
+// Imports from the main function
+uniform float random;
+
 in float depth;
 
 void main()
 {
-    float fog_factor = 1-exp(-pow(depth,2));
+    float fog_factor = 1-exp(-pow(depth,2)) * random;
 
     FragColor =
     mix(

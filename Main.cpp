@@ -53,6 +53,7 @@ int main()
 	// In this case we are using OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+
 	// Tell GLFW we are using the CORE profile
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -71,8 +72,9 @@ int main()
 
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
+
 	// Specify the viewport of OpenGL in the Window
-	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
+	// In this case the viewport goes from x = 0, y = 0
 	glViewport(0, 0, WIDTH, HEIGHT);
 
 	// Generates Shader object using shaders default.vert and default.frag
@@ -105,15 +107,30 @@ int main()
 	// Enemy speed
 	float enemy_speed = 0.5f;
 
+	bool game_over = false;
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		if (game_over)
+		{
+			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+				glfwDestroyWindow(window);
+				return 0;
+			}
+
+			glfwPollEvents();
+		}
+		else
+		{
+
+		
 		//set fog range
 		fogRange = 0.5 + 0.2 * my_world.paperCounter;
 		enemy_speed = 0.5 + 0.1 * my_world.paperCounter;
 		glUniform1f(fogRangeLoc, fogRange);
 
-		glfwSetWindowTitle(window, ("Pocet opravenych zapoctu: " + std::to_string(my_world.paperCounter) + "/5").c_str());
+		glfwSetWindowTitle(window, ((char const*)u8"Poèet opravených zápoètù: " + std::to_string(my_world.paperCounter) + "/5").c_str());
 
 		// Timer
 		double delta_t = glfwGetTime() - prevTime;
@@ -155,13 +172,11 @@ int main()
 			glm::vec3 direction = glm::normalize(enemy_vec3 - my_world.camera.Position_);
 			direction.y = 0.0f;
 
-			// Vypoèítáme vzdálenost, kterou se nepøítel bude pohybovat
 			float distance = static_cast<float>(enemy_speed * delta_t);
 
 			auto const cam_pos = glm::vec2{ my_world.camera.Position_.x,  my_world.camera.Position_.z };
 			auto const pos = glm::vec2{ enemy_vec3.x, enemy_vec3.z };
 
-			// Pokud by se nepøítel pohyboval více než vzdálenost mezi ním a kamerou, omezíme ho na tuto vzdálenost
 			auto const enemy_vec = cam_pos - pos;
 			auto const enemy_dist = (enemy_vec.x * enemy_vec.x + enemy_vec.y * enemy_vec.y);
 			if (enemy_dist < 6.0f && enemy_dist > (5.0f - 0.7*my_world.paperCounter))
@@ -174,16 +189,29 @@ int main()
 				distance = 0.005f;// glm::length(cam_pos - pos);
 			}
 
+			//GAME OVER
 			if (enemy_dist < 0.1f)
 			{
-				glfwSetWindowTitle(window, ("GAME OVER! falsovani zapoctovych testu ti vydrzelo celkem: " + std::to_string(glfwGetTime()) + "/5").c_str());
+				glfwSetWindowTitle(window, (
+					(char const*)u8"Spravedlnost tì dohnala! Falšování zápoètových testù ti vydrželo celkem: "
+					+ std::to_string(glfwGetTime()) +
+					" sekund a stihl jsi opravit celkem " +
+					std::to_string(my_world.paperCounter) +
+					(char const*)u8"/5 zápoètových testù").c_str());
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				game_over = true;
+			}
+			else if (my_world.paperCounter == 5)
+			{
+				glfwSetWindowTitle(window, (
+					(char const*)u8"Utekl jsi spravedlnosti! Zfalšování všech zápoètových testù ti zabralo celkem: "
+					+ std::to_string(glfwGetTime()) +
+					" sekund ").c_str());
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				game_over = true;
 			}
 
-			// Vypoèítáme novou pozici nepøítele pomocí lineární interpolace
 			glm::vec3 new_position = enemy_vec3 - direction * distance;
-
-
-			
 
 			my_world.enemy.model_matrix = glm::mat4{1.f};
 			my_world.enemy.model_matrix[3] = glm::vec4(new_position, 1.0f);
@@ -192,9 +220,7 @@ int main()
 			my_world.enemy.model_matrix *= glm::rotate(glm::orientedAngle(glm::normalize(cam_pos - pos), glm::vec2(1.0f, 0.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
 			draw_object(my_world.enemy, modelLoc);
 		}
-		
-		/*std::cout << "\n Enemy pos: \n" << my_world.enemy.model_matrix[3].a << std::endl;
-		std::cout << my_world.enemy.model_matrix[3].b << std::endl;*/
+	
 
 
 
@@ -210,6 +236,7 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
+		}
 	}
 
 	// Delete window before ending the program

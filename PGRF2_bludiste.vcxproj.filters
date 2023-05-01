@@ -98,8 +98,5 @@
     <Image Include="..\..\..\..\Users\Majsek\Pictures\wise_oak_tree.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="pop_cat.png">
-      <Filter>Resource Files\Textures</Filter>
-    </Image>
   </ItemGroup>
 </Project>

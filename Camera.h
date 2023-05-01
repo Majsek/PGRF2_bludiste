@@ -49,7 +49,7 @@ struct Camera
 {
 	// Stores the main vectors of the camera
 	glm::vec3 Position_;
-	glm::vec3 Orientation{ 1.0f, 0.0f, 0.0f };
+	glm::vec3 Orientation{ -1.0f, 0.0f, 0.0f };
 	glm::vec3 const Up{ 0.0f, 1.0f, 0.0f };
 
 	// Prevents the camera from jumping around when first clicking left click

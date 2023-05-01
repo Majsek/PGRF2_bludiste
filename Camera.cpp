@@ -106,7 +106,6 @@ void Camera::Inputs(GLFWwindow* window, float const delta_t)
 
 
 void Camera::UpdatePaper(Square square) {
-	std::cout << "Zápoèet opraven\n";
 	square.type += 1;
 	world_.map_[static_cast<int>(square.x - 0.5f)][static_cast<int>(square.y - 0.5f)] += 1;
 	world_.paperCounter++;

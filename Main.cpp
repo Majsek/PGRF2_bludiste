@@ -30,7 +30,6 @@ void draw_object(Object const& obj, int model_location)
 	glDrawElements(GL_TRIANGLES, obj.geometry.index_num, GL_UNSIGNED_INT, 0);
 };
 
-
 struct glfw
 {
 	glfw()
@@ -83,57 +82,39 @@ int main()
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
-	// Initializes matrices so they are not the null matrix
-	//glm::mat4 transMat{ 1.0f };
-
 
 	int const modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
-
 	GLint randomLoc = glGetUniformLocation(shaderProgram.ID, "random");
+	GLint fogRangeLoc = glGetUniformLocation(shaderProgram.ID, "fogRange");
 	
 
 	double prevTime = glfwGetTime();
 
 	World my_world;
 
-
-
-	//for (const auto& object : objects) {
-
-	//	std::cout << typeid(object.geometry).name() << " \n";
-	//	for (int i = 0; i < 4; i++) {
-	//		for (int j = 0; j < 4; j++) {
-	//			std::cout << object.model_matrix[i][j] << " ";
-	//		}
-	//		std::cout << std::endl;
-	//	}
-
-	//}
-
-
-
 	shaderProgram.Activate();
 
 	// Specify the color of the background
 	glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
-
-
-
-
-
-	// Nastavení semínka pro generátor náhodných èísel
-//	srand(time(0));
-
 	// Initial flame value
 	float flame = 0.7f;
+	float fogRange = 0.5;
+	glUniform1f(fogRangeLoc, fogRange);
 
 	// Enemy speed
-	const float enemy_speed = 0.5f;
+	float enemy_speed = 0.5f;
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		//set fog range
+		fogRange = 0.5 + 0.2 * my_world.paperCounter;
+		enemy_speed = 0.5 + 0.1 * my_world.paperCounter;
+		glUniform1f(fogRangeLoc, fogRange);
+
+		glfwSetWindowTitle(window, ("Pocet opravenych zapoctu: " + std::to_string(my_world.paperCounter) + "/5").c_str());
+
 		// Timer
 		double delta_t = glfwGetTime() - prevTime;
 		prevTime = glfwGetTime();
@@ -144,7 +125,7 @@ int main()
 		// Handles camera inputs
 		my_world.camera.Inputs(window, static_cast<float>(delta_t));
 		// Updates and exports the camera matrix to the Vertex Shader
-		my_world.camera.Matrix(70.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+		my_world.camera.Matrix(60.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
 
 		// Random flame change
@@ -164,46 +145,53 @@ int main()
 
 		glUniform1f(randomLoc, flame);
 
-		//std::cout << "Flame value: " << flame << std::endl;
-
-		//Enemy translate
-		//my_world.enemy.model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.f, 0.0f, 3.f));
-	/*	glm::mat4 translate_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.f, 0.0f, 3.f));
-		my_world.enemy.model_matrix += translate_matrix * glm::translate(glm::mat4(1.0f), + my_world.camera.Position_);*/
-
-
-
-		// Vypoèítáme smìr, kterým se nepøítel bude pohybovat
-		//glm::vec3 direction = glm::normalize(my_world.camera.Position_ - my_world.enemy.model_matrix[3]);
-		glm::mat4 enemy_mat4 = my_world.enemy.model_matrix;
-		glm::vec3 enemy_vec3 = glm::vec3(enemy_mat4[3].x, enemy_mat4[3].y, enemy_mat4[3].z);
-
-		glm::vec3 direction = glm::normalize(enemy_vec3 - my_world.camera.Position_);
-		direction.y = 0.0f;
-
-		// Vypoèítáme vzdálenost, kterou se nepøítel bude pohybovat
-		float distance = static_cast<float>(enemy_speed * delta_t);
-
-		auto const cam_pos = glm::vec2{ my_world.camera.Position_.x,  my_world.camera.Position_.z };
-		auto const pos = glm::vec2{ enemy_vec3.x, enemy_vec3.z };
-
-		// Pokud by se nepøítel pohyboval více než vzdálenost mezi ním a kamerou, omezíme ho na tuto vzdálenost
-		auto const enemy_vec = cam_pos - pos;
-		auto const enemy_dist = (enemy_vec.x * enemy_vec.x + enemy_vec.y * enemy_vec.y);
-		if (enemy_dist < 6.0f && enemy_dist > 3.0f)
+		// Enemy
+		if (my_world.paperCounter > 0)
 		{
-			distance = 0.005f;// glm::length(cam_pos - pos);
+
+			glm::mat4 enemy_mat4 = my_world.enemy.model_matrix;
+			glm::vec3 enemy_vec3 = glm::vec3(enemy_mat4[3].x, enemy_mat4[3].y, enemy_mat4[3].z);
+
+			glm::vec3 direction = glm::normalize(enemy_vec3 - my_world.camera.Position_);
+			direction.y = 0.0f;
+
+			// Vypoèítáme vzdálenost, kterou se nepøítel bude pohybovat
+			float distance = static_cast<float>(enemy_speed * delta_t);
+
+			auto const cam_pos = glm::vec2{ my_world.camera.Position_.x,  my_world.camera.Position_.z };
+			auto const pos = glm::vec2{ enemy_vec3.x, enemy_vec3.z };
+
+			// Pokud by se nepøítel pohyboval více než vzdálenost mezi ním a kamerou, omezíme ho na tuto vzdálenost
+			auto const enemy_vec = cam_pos - pos;
+			auto const enemy_dist = (enemy_vec.x * enemy_vec.x + enemy_vec.y * enemy_vec.y);
+			if (enemy_dist < 6.0f && enemy_dist > (5.0f - 0.7*my_world.paperCounter))
+			{
+				distance = 0.005f;// glm::length(cam_pos - pos);
+			}
+
+			if (enemy_dist < 1.0f && enemy_dist >(0.1f))
+			{
+				distance = 0.005f;// glm::length(cam_pos - pos);
+			}
+
+			if (enemy_dist < 0.1f)
+			{
+				glfwSetWindowTitle(window, ("GAME OVER! falsovani zapoctovych testu ti vydrzelo celkem: " + std::to_string(glfwGetTime()) + "/5").c_str());
+			}
+
+			// Vypoèítáme novou pozici nepøítele pomocí lineární interpolace
+			glm::vec3 new_position = enemy_vec3 - direction * distance;
+
+
+			
+
+			my_world.enemy.model_matrix = glm::mat4{1.f};
+			my_world.enemy.model_matrix[3] = glm::vec4(new_position, 1.0f);
+
+
+			my_world.enemy.model_matrix *= glm::rotate(glm::orientedAngle(glm::normalize(cam_pos - pos), glm::vec2(1.0f, 0.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
+			draw_object(my_world.enemy, modelLoc);
 		}
-
-		// Vypoèítáme novou pozici nepøítele pomocí lineární interpolace
-		glm::vec3 new_position = enemy_vec3 - direction * distance;
-
-		// Nastavíme novou pozici nepøítele
-		my_world.enemy.model_matrix = glm::mat4{1.f};
-		my_world.enemy.model_matrix[3] = glm::vec4(new_position, 1.0f);
-
-
-		my_world.enemy.model_matrix *= glm::rotate(glm::orientedAngle(glm::normalize(cam_pos - pos), glm::vec2(1.0f, 0.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
 		
 		/*std::cout << "\n Enemy pos: \n" << my_world.enemy.model_matrix[3].a << std::endl;
 		std::cout << my_world.enemy.model_matrix[3].b << std::endl;*/
@@ -215,7 +203,8 @@ int main()
 		{
 			draw_object(obj, modelLoc);
 		}
-		draw_object(my_world.enemy, modelLoc);
+		draw_object(my_world.floor, modelLoc);
+		draw_object(my_world.ceiling, modelLoc);
 		
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);

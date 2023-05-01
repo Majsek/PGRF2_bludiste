@@ -11,12 +11,13 @@ layout (binding = 0) uniform sampler2D tex0;
 
 // Imports from the main function
 uniform float random;
+uniform float fogRange;
 
 in float depth;
 
 void main()
 {
-    float fog_factor = 1-exp(-pow(depth,2)) * random;
+    float fog_factor = 1-exp(-pow(depth,fogRange)) * random;
 
     FragColor =
     mix(

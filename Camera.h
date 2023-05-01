@@ -56,6 +56,7 @@ struct Camera
 	bool firstClick = true;
 	std::vector<Square> squares_;
 
+	//World pointer
 	World& world_;
 
 	// Stores the WIDTH and HEIGHT of the window
@@ -65,16 +66,6 @@ struct Camera
 	// Adjust the speed of the camera and it's sensitivity when looking around
 	float speed{ 0.1f };
 	float sensitivity{ 50.0f };
-
-	// Camera constructor to set up initial values
-	//Camera(int WIDTH, int HEIGHT, glm::vec3 position, int(*map_)[20]);
-	//Camera(int WIDTH, int HEIGHT, glm::vec3 position, bool map[20][20])
-	//	: Position_{ position },
-	//	width_{ WIDTH },
-	//	height_{ HEIGHT },
-	//	map_ { }
-	//{ 	}
-
 
 	Camera(int width, int height, glm::vec3 position, World& world)
 		: Position_{ position },

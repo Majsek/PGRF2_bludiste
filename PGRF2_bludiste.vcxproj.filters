@@ -45,9 +45,6 @@
     <ClCompile Include="Wall.h">
       <Filter>Header Files\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -91,6 +88,9 @@
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Floor.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>

@@ -23,7 +23,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum pixelTyp
 	glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	// Configures the way the texture repeats (if it does at all)
-	glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(texType, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	// Extra lines in case you choose to use GL_CLAMP_TO_BORDER

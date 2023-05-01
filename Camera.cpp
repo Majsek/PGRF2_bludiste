@@ -40,10 +40,6 @@ void Camera::Inputs(GLFWwindow* window, float const delta_t)
 	{
 		Try_move_on_pos(speed * delta_t * glm::normalize(glm::cross(Orientation, Up)));
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
-		Try_move_on_pos(speed * delta_t * Up);
-	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 	{
 		Try_move_on_pos(speed * delta_t * -Up);
@@ -113,6 +109,7 @@ void Camera::UpdatePaper(Square square) {
 	std::cout << "Zápoèet opraven\n";
 	square.type += 1;
 	world_.map_[static_cast<int>(square.x - 0.5f)][static_cast<int>(square.y - 0.5f)] += 1;
+	world_.paperCounter++;
 	world_.reset();
 }
 
